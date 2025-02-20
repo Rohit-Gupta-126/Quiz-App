@@ -31,7 +31,7 @@ A modern quiz application built with Next.js 15, featuring timed questions, inst
 1. Clone the repository
 ```bash
 git clone https://github.com/Rohit-Gupta-126/Quiz-App.git
-cd quiz-app
+cd Quiz-App
 ```
 
 2. Install dependencies
@@ -40,15 +40,21 @@ npm install
 # or
 yarn install
 ```
+3. Run the Build Server
+```bash
+npm run build
+#or
+yarn build
+```
 
-3. Run the development server
+4. Run the development server
 ```bash
 npm run dev
 # or
 yarn dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
+5. Open [http://localhost:3000](http://localhost:3000) in your browser
 
 ## Deployment
 
