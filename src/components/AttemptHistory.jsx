@@ -6,7 +6,7 @@ export default function AttemptHistory({ attempts = [], isVisible, onClose }) {
 
   const attemptsArray = Array.isArray(attempts) ? attempts : [];
 
-  // Sort attempts by date (newest first)
+  // Sort attempts by date in ascending order
   const sortedAttempts = [...attemptsArray].sort((a, b) => new Date(b.date) - new Date(a.date));
 
   return (

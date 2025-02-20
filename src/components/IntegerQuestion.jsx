@@ -1,7 +1,7 @@
 'use client'
 import React from 'react';
 
-export default function IntegerQuestion ({ question, userAnswer, onAnswerChange, feedback, onSkip }) {
+export default function IntegerQuestion ({ question, userAnswer, onAnswerChange, feedback }) {
     const isCorrect = feedback && parseInt(userAnswer) === question.answer;
     const isIncorrect = feedback && userAnswer && parseInt(userAnswer) !== question.answer;
 

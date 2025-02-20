@@ -1,5 +1,6 @@
 'use client'
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { quizData } from '../data/quizData';
 import { getAttempts, saveAttempt } from '../services/dbService';
@@ -24,7 +25,7 @@ export default function Quiz() {
   const intervalRef = useRef(null);
   const startTimeRef = useRef(null);
 
-  // Load attempts on component mount
+  // Load attempts on component
   useEffect(() => {
     const loadAttempts = async () => {
       try {
@@ -37,24 +38,23 @@ export default function Quiz() {
     loadAttempts();
   }, []);
 
-  // Timer effect: start timer when quiz is active and no feedback is shown
+  // Timer effect: start timer when quiz is active
   useEffect(() => {
     if (quizStarted && !quizFinished && !feedback) {
       if (!startTimeRef.current) {
         startTimeRef.current = Date.now();
       }
-      // Start timer only if there isn't an active interval already.
+
       if (!intervalRef.current) {
         intervalRef.current = setInterval(() => {
           setTimer(prev => {
             if (prev <= 1) {
-              // Time's up for current question
               handleTimeUp();
               return 30;
             }
             return prev - 1;
           });
-          // Update total time spent
+
           setTimeSpent(Math.floor((Date.now() - startTimeRef.current) / 1000));
         }, 1000);
       }
@@ -69,11 +69,9 @@ export default function Quiz() {
 
   const handleTimeUp = () => {
     if (quizFinished) {
-      console.log("⚠️ Time ran out but quiz was already finished. Skipping.");
       return;
     }
-    console.log("⏳ Time's up for question.");
-    // If no answer selected (i.e. no feedback) simply skip to next question
+    // If no answer selected skip to next question
     if (!feedback) {
       if (currentQuestion < quizData.length - 1) {
         console.log("➡️ Skipping to next question.");
@@ -81,7 +79,6 @@ export default function Quiz() {
         setFeedback(null);
         setTimer(30);
       } else {
-        console.log("🚀 Time ran out on last question, calling finishQuiz()");
         finishQuiz();
       }
     }
@@ -100,7 +97,7 @@ export default function Quiz() {
   };
 
   const handleAnswerSelect = (answer) => {
-    if (feedback) return; // Prevent re-answering once feedback is shown
+    if (feedback) return;
 
     const newAnswers = [...answers];
     newAnswers[currentQuestion] = answer;
@@ -110,33 +107,27 @@ export default function Quiz() {
     const currentQuestionData = quizData[currentQuestion];
     const isCorrect = answer === currentQuestionData.answer;
     setFeedback(isCorrect);
+
+    let newScore = score;
     if (isCorrect) {
-      setScore(prev => prev + 1);
+      newScore = score + 1;
+      setScore(newScore);
     }
 
-    // Clear the interval so timer stops during feedback
+    // Clear timer during feedback
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
 
-    // After a short delay, move to next question or finish quiz
+    // After delay, move to next or finish
     setTimeout(() => {
       if (currentQuestion < quizData.length - 1) {
-        console.log("➡️ Moving to next question.");
         setCurrentQuestion(prev => prev + 1);
         setFeedback(null);
         setTimer(30);
       } else {
-        console.log("🚀 Last question answered, attempting to call finishQuiz()...");
-        setTimeout(() => {
-          if (!quizFinished) {
-            console.log("✅ Calling finishQuiz() after last question is processed.");
-            finishQuiz();
-          } else {
-            console.log("⚠️ Duplicate finishQuiz() call skipped.");
-          }
-        }, 1000);
+        finishQuiz(newScore);
       }
     }, 1000);
   };
@@ -150,13 +141,16 @@ export default function Quiz() {
   const handleIntegerAnswerSubmit = () => {
     if (feedback) return;
     const answer = answers[currentQuestion];
-    if (!answer) return; // Do nothing if no answer provided
+    if (!answer) return;
 
     const currentQuestionData = quizData[currentQuestion];
     const isCorrect = parseInt(answer) === currentQuestionData.answer;
     setFeedback(isCorrect);
+
+    let newScore = score;
     if (isCorrect) {
-      setScore(prev => prev + 1);
+      newScore = score + 1;
+      setScore(newScore);
     }
 
     if (intervalRef.current) {
@@ -170,7 +164,7 @@ export default function Quiz() {
         setFeedback(null);
         setTimer(30);
       } else {
-        finishQuiz();
+        finishQuiz(newScore);
       }
     }, 1000);
   };
@@ -191,12 +185,8 @@ export default function Quiz() {
     }
   };
 
-  const finishQuiz = async () => {
-    if (quizFinished) {
-      console.log("⚠️ finishQuiz() already ran, skipping...");
-      return;
-    }
-    console.log("✅ Running finishQuiz()...");
+  const finishQuiz = async (finalScore = score) => {
+    if (quizFinished) return;
     setQuizFinished(true);
 
     if (intervalRef.current) {
@@ -211,7 +201,7 @@ export default function Quiz() {
       const attempt = {
         id: uuidv4(),
         date: new Date(),
-        score,
+        score: finalScore,
         totalQuestions: quizData.length,
         timeSpent: totalTime,
         answers: [...answers]
@@ -326,7 +316,7 @@ export default function Quiz() {
         </h2>
         <div className="text-right">
           <div className="text-sm text-gray-500 mb-1">
-            Score: {score}/{currentQuestion}
+            Score: {score}/{currentQuestion + 1}
           </div>
         </div>
       </div>
