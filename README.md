@@ -30,7 +30,7 @@ A modern quiz application built with Next.js 15, featuring timed questions, inst
 
 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/quiz-app.git
+git clone https://github.com/Rohit-Gupta-126/Quiz-App.git
 cd quiz-app
 ```
 
@@ -52,4 +52,4 @@ yarn dev
 
 ## Deployment
 
-This application is deployed on [Vercel/Netlify]. You can view the live version at [your-deployment-url].
+This application is deployed on [Vercel]. You can view the live version at [https://quiz-app-rohit-gupta.vercel.app/].
