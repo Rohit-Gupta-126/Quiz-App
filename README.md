@@ -26,7 +26,7 @@ A modern quiz application built with Next.js 15, featuring timed questions, inst
 - Tailwind CSS
 - IndexedDB for local storage
 
-### Installation
+## Installation
 
 1. Clone the repository
 ```bash
